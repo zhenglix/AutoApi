@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import requests as req
 import json,sys,time
 #先注册azure应用,确保应用有以下权限:
@@ -6,17 +5,20 @@ import json,sys,time
 #user:	User.Read.All、User.ReadWrite.All、Directory.Read.All、Directory.ReadWrite.All
 #mail:  Mail.Read、Mail.ReadWrite、MailboxSettings.Read、MailboxSettings.ReadWrite
 #注册后一定要再点代表xxx授予管理员同意,否则outlook api无法调用
-###################################################################
-#把下方单引号内的内容改为你的应用id                                         #
-id=r'你的应用id'                         
-#把下方单引号内的内容改为你的应用机密                                       #
-secret=r'你的应用机密'                                           
-###################################################################
 
+###################################################################
+#在下方单引号内填入应用id                                         #
+id=r'bc003462-69b4-42f5-b3ba-d866fb0b0a9c'
+#在下方单引号内填入应用秘钥                                       #
+secret=r'X0TW3ahvkpG0fEGmSctn@WgNBvRt3]::'
+###################################################################
 
 path=sys.path[0]+r'/1.txt'
 num1 = 0
-
+fo = open(path, "r+")
+refresh_token = fo.read()
+fo.close()
+# print(refresh_token)
 def gettoken(refresh_token):
     headers={'Content-Type':'application/x-www-form-urlencoded'
             }
@@ -34,11 +36,7 @@ def gettoken(refresh_token):
         f.write(refresh_token)
     return access_token
 def main():
-    fo = open(path, "r+")
-    refresh_token = fo.read()
-    fo.close()
     global num1
-    localtime = time.asctime( time.localtime(time.time()) )
     access_token=gettoken(refresh_token)
     headers={
     'Authorization':access_token,
@@ -51,7 +49,7 @@ def main():
         if req.get(r'https://graph.microsoft.com/v1.0/me/drive',headers=headers).status_code == 200:
             num1+=1
             print("2调用成功"+str(num1)+'次')
-        if req.get(r'https://graph.microsoft.com/v1.0/drive/root',headers=headers).status_code == 200:
+        if req.get(r'https://graph.microsoft.com/v1.0/drive/root: ',headers=headers).status_code == 200:
             num1+=1
             print('3调用成功'+str(num1)+'次')
         if req.get(r'https://graph.microsoft.com/v1.0/users ',headers=headers).status_code == 200:
@@ -78,9 +76,9 @@ def main():
         if req.get(r'https://graph.microsoft.com/v1.0/me/outlook/masterCategories',headers=headers).status_code == 200:
             num1+=1
             print('10调用成功'+str(num1)+'次')
-            print('此次运行结束时间为 : '+localtime)
     except:
         print("pass")
         pass
-for _ in range(3):
+while True:
     main()
+    time.sleep(300)
